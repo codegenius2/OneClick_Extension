@@ -5,13 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Downloader Options</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div class="container">
-        <h1>Image Downloader Options</h1>
+        <h1>Image Downloader Settings</h1>
         <form id="settings-form">
             <div class="form-group">
                 <label for="filenameFormat">Filename Format:</label>
@@ -24,22 +23,26 @@
             </div>
             <div class="form-group">
                 <label for="prefix">Filename Prefix:</label>
-                <input type="text" id="prefix" placeholder="e.g., my_image_">
+                <input type="text" id="prefix" placeholder="e.g., img_">
             </div>
             <div class="form-group">
                 <label for="suffix">Filename Suffix:</label>
-                <input type="text" id="suffix" placeholder="e.g., _2024">
+                <input type="text" id="suffix" placeholder="e.g., _download">
+            </div>
+            <div class="form-group">
+                <label for="sequenceStart">Start Value for Sequential Number:</label>
+                <input type="number" id="sequenceStart" min="1" step="1" value="1" placeholder="1">
             </div>
             <div class="form-group">
                 <label for="minWidth">Minimum Image Width (px):</label>
-                <input type="number" id="minWidth" min="1" step="1" value="6" placeholder="e.g., 100">
+                <input type="number" id="minWidth" min="1" step="1" value="10" placeholder="e.g., 100">
             </div>
             <div class="form-group">
                 <label for="minHeight">Minimum Image Height (px):</label>
-                <input type="number" id="minHeight" min="1" step="1" value="6" placeholder="e.g., 100">
+                <input type="number" id="minHeight" min="1" step="1" value="10" placeholder="e.g., 100">
             </div>
             <div class="form-group">
-                <label for="buttonPosition">Button Position:</label>
+                <label for="buttonPosition">DL Button Position:</label>
                 <select id="buttonPosition">
                     <option value="topRight">Top Right</option>
                     <option value="topLeft">Top Left</option>
