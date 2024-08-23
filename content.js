@@ -1,56 +1,50 @@
-// Function to hide all download buttons
-function hideAllDownloadButtons() {
-    const buttons = document.querySelectorAll(".download-btn");
-    buttons.forEach(button => {
-        button.style.display = 'none';
-    });
-}
+chrome.storage.sync.get([
+    "isEnabled",
+    "minWidth",
+    "minHeight",
+    "buttonPosition",
+    "filenameFormat",
+    "prefix",
+    "suffix",
+    "sequenceStart"
+], (settings) => {
+    if (!settings.isEnabled) {
+        console.log("Extension is disabled.");
+        return;
+    }
 
-// Function to show download buttons for visible images
-function showDownloadButtonForVisibleImages() {
+    const minWidth = Math.max(settings.minWidth || 10, 1);
+    const minHeight = Math.max(settings.minHeight || 10, 1);
+    let sequence = settings.sequenceStart || 1;
+
     const images = document.querySelectorAll("img");
-    images.forEach((img, index) => {
-        if (isImageVisible(img)) {
-            const dlButton = createDownloadButton('topRight'); // Adjust the position as needed
-            attachDownloadButton(dlButton, img, 'sequence', index + 1); // Add a sequential filename
-        } else {
-            console.log("Image is not visible on the screen.");
+
+    images.forEach((img) => {
+        if (img.width >= minWidth && img.height >= minHeight) {
+            const dlButton = createDownloadButton(settings.buttonPosition);
+            attachDownloadButton(dlButton, img, settings.filenameFormat, sequence++, settings.prefix, settings.suffix);
         }
     });
-}
 
-// Function to check if an image is visible on the screen
-function isImageVisible(img) {
-    const rect = img.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-}
-
-// Event listener for clicking on image triggers
-document.querySelectorAll(".image-trigger").forEach(trigger => {
-    trigger.addEventListener("click", function () {
-        hideAllDownloadButtons(); // Hide all existing DL buttons
-
-        // Simulate an image transition or load (you should replace this with actual logic)
-        setTimeout(() => {
-            console.log("Image has been changed or loaded.");
-            showDownloadButtonForVisibleImages(); // Show DL buttons for the new visible images
-        }, 100); // Adjust delay as needed for your use case
-    });
+    // Add the reposition button
+    const repositionButton = createRepositionButton();
+    document.body.appendChild(repositionButton);
 });
 
 // Function to create a download button
 function createDownloadButton(position) {
     const button = document.createElement("button");
     button.classList.add("download-btn");
-    button.textContent = "⇩"; // Set button content to "⇩"
+    button.textContent = "⇩";
 
-    // Position the button
     button.style.position = "absolute";
+    setPosition(button, position);
+
+    return button;
+}
+
+// Function to set the position of the button
+function setPosition(button, position) {
     switch (position) {
         case "topLeft":
             button.style.top = "10px";
@@ -72,25 +66,21 @@ function createDownloadButton(position) {
             button.style.top = "10px";
             button.style.right = "10px";
     }
-    button.style.zIndex = "1000";
-
-    return button;
 }
 
-// Function to attach the download button to an image and set up the click event
-function attachDownloadButton(button, img, filenameFormat, sequence) {
+// Function to attach the download button to an image
+function attachDownloadButton(button, img, filenameFormat, sequence, prefix = "", suffix = "") {
     button.addEventListener("click", (event) => {
         event.stopPropagation();
         event.preventDefault();
 
         const imgSrc = img.src;
-        const filename = generateFilename(filenameFormat, imgSrc, sequence);
+        const filename = generateFilename(filenameFormat, imgSrc, sequence, prefix, suffix);
         initiateDownload(imgSrc, filename);
     });
 
     img.parentElement.style.position = "relative";
     img.parentElement.appendChild(button);
-    console.log("Download button attached to image.");
 }
 
 // Function to generate the filename based on the settings
@@ -119,5 +109,47 @@ function initiateDownload(url, filename) {
     });
 }
 
-// Initial call to show DL buttons for the visible images when the page loads
-document.addEventListener("DOMContentLoaded", showDownloadButtonForVisibleImages);
+// Function to create a reposition button
+function createRepositionButton() {
+    const button = document.createElement("button");
+    button.textContent = "Reposition DL Buttons";
+    button.style.position = "fixed";
+    button.style.bottom = "20px";
+    button.style.right = "20px";
+    button.style.zIndex = "1000";
+    button.style.padding = "10px";
+    button.style.backgroundColor = "#36D1DC";
+    button.style.color = "white";
+    button.style.border = "none";
+    button.style.borderRadius = "5px";
+    button.style.cursor = "pointer";
+
+    button.addEventListener("click", enableRepositioning);
+
+    return button;
+}
+
+// Function to enable repositioning of DL buttons
+function enableRepositioning() {
+    const buttons = document.querySelectorAll(".download-btn");
+    buttons.forEach(button => {
+        button.style.position = "fixed";
+        button.style.zIndex = "1001";
+        button.draggable = true;
+
+        button.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", null);
+        });
+
+        button.addEventListener("drag", (e) => {
+            if (e.clientX > 0 && e.clientY > 0) {
+                button.style.left = `${e.clientX - button.offsetWidth / 2}px`;
+                button.style.top = `${e.clientY - button.offsetHeight / 2}px`;
+            }
+        });
+
+        button.addEventListener("dragend", (e) => {
+            // Store the new position if needed
+        });
+    });
+}
