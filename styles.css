@@ -7,7 +7,8 @@ body {
 }
 
 .container {
-  width: 300px;
+  width: 360px;
+  height: 700px;
   margin: 0 auto;
 }
 
@@ -103,4 +104,10 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 .download-btn:active {
     transform: scale(1.1);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-group{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
