@@ -6,15 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Downloader Settings</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styling as per the previous enhanced UI */
+        /* Additional styles for hidden elements */
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
     <div class="container">
         <h1>Image Downloader Settings</h1>
         <form id="settings-form">
-            <div class="form-group">
-                <label for="isEnabled">Enable Extension:</label>
+            <div class="form-group checkbox-group">
                 <input type="checkbox" id="isEnabled">
+                <span for="isEnabled">Enable Extension</span>
             </div>
             <div class="form-group">
                 <label for="filenameFormat">Filename Format:</label>
@@ -25,15 +32,15 @@
                     <option value="sequence_suffix">Sequential + Suffix</option>
                 </select>
             </div>
-            <div class="form-group">
+            <div id="prefix-group" class="form-group hidden">
                 <label for="prefix">Filename Prefix:</label>
                 <input type="text" id="prefix" placeholder="e.g., img_">
             </div>
-            <div class="form-group">
+            <div id="suffix-group" class="form-group hidden">
                 <label for="suffix">Filename Suffix:</label>
                 <input type="text" id="suffix" placeholder="e.g., _download">
             </div>
-            <div class="form-group">
+            <div id="sequenceStart-group" class="form-group hidden">
                 <label for="sequenceStart">Start Value for Sequential Number:</label>
                 <input type="number" id="sequenceStart" min="1" step="1" value="1">
             </div>
@@ -55,8 +62,8 @@
                 </select>
             </div>
             <div class="btn-group">
-                <button type="button" id="saveAndReload" class="btn">Reload & Save</button>
-                <button type="submit" id="saveOnly" class="btn">Save</button>
+            <button type="button" id="saveAndReload" class="btn">Save & Reload</button>
+            <button type="submit" id="saveOnly" class="btn">Save</button>
             </div>
         </form>
     </div>
