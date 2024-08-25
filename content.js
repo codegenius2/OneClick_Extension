@@ -1,9 +1,8 @@
-
 chrome.storage.sync.get([
     "isEnabled",
     "minWidth",
     "minHeight",
-    "buttonPosition",
+    "buttonPosition", // User-defined position setting
     "filenameFormat",
     "prefix",
     "suffix",
@@ -27,16 +26,16 @@ chrome.storage.sync.get([
     images.forEach((img, index) => {
         if (img.width >= minWidth && img.height >= minHeight) {
             console.log(`Processing image: ${img.src}, Width: ${img.width}, Height: ${img.height}`);
-            const dlButton = createDownloadButton("topRight");
+            const dlButton = createDownloadButton(settings.buttonPosition);
 
             if (isAfterTwoBRs(img)) {
                 // Calculate top based on the previous image height + 10px
                 const previousImg = getPreviousImageBeforeBRs(img);
                 if (previousImg) {
-                    attachDownloadButtonAfterBRs(dlButton, img, previousImg, settings.filenameFormat, sequence++, settings.prefix, settings.suffix);
+                    attachDownloadButtonAfterBRs(dlButton, img, previousImg, settings.filenameFormat, sequence++, settings.prefix, settings.suffix, settings.buttonPosition);
                 }
             } else {
-                attachDownloadButton(dlButton, img, settings.filenameFormat, sequence++, settings.prefix, settings.suffix);
+                attachDownloadButton(dlButton, img, settings.filenameFormat, sequence++, settings.prefix, settings.suffix, settings.buttonPosition);
             }
         } else {
             console.log(`Image not eligible for DL button: ${img.src}`);
@@ -44,6 +43,7 @@ chrome.storage.sync.get([
     });
 });
 
+// Function to create a download button
 function createDownloadButton(position) {
     const button = document.createElement("button");
     button.classList.add("download-btn");
@@ -86,7 +86,7 @@ function getPreviousImageBeforeBRs(img) {
     return null;
 }
 
-// Function to set the position of the button relative to the image
+// Function to set the position of the button relative to the image or parent
 function setPosition(button, img, position) {
     switch (position) {
         case "topRight":
@@ -113,7 +113,7 @@ function setPosition(button, img, position) {
 }
 
 // Function to attach the download button after <br><br> relative to the previous image
-function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, sequence, prefix = "", suffix = "") {
+function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, sequence, prefix = "", suffix = "", position) {
     console.log(`Attaching button to image after <br><br>: ${img.src}`);
 
     button.addEventListener("click", (event) => {
@@ -133,14 +133,14 @@ function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, 
 
     // Calculate top position based on the height of the previous image + 10px
     button.style.top = `${previousImg.offsetHeight + 30}px`;
-    button.style.right = "10px"; // Adjust as needed
+    button.style.right = "20px"; // Adjust as needed
 
     // Attach the button to the parent container
     img.parentElement.appendChild(button);
 }
 
 // Function to attach the download button to an image
-function attachDownloadButton(button, img, filenameFormat, sequence, prefix = "", suffix = "") {
+function attachDownloadButton(button, img, filenameFormat, sequence, prefix = "", suffix = "", position) {
     console.log(`Attaching button to image: ${img.src}`);
 
     button.addEventListener("click", (event) => {
@@ -158,8 +158,8 @@ function attachDownloadButton(button, img, filenameFormat, sequence, prefix = ""
         img.parentElement.style.position = "relative";
     }
 
-    // Position the button relative to the image
-    setPosition(button, img, "topRight");
+    // Position the button based on user settings
+    setPosition(button, img, position);
 
     // Attach the button to the parent container
     img.parentElement.appendChild(button);
