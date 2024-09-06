@@ -2,7 +2,7 @@ chrome.storage.sync.get([
     "isEnabled",
     "minWidth",
     "minHeight",
-    "buttonPosition",
+    "buttonPosition", // User-defined position setting
     "filenameFormat",
     "prefix",
     "suffix",
@@ -43,10 +43,10 @@ chrome.storage.sync.get([
                 // Calculate position relative to the previous image's height + 30px
                 const previousImg = getPreviousImageBeforeBRs(img);
                 if (previousImg) {
-                    attachDownloadButtonAfterBRs(dlButton, img, previousImg, settings.filenameFormat, settings.prefix, settings.suffix, settings.buttonPosition, zeroPaddingLength);
+                    attachDownloadButtonAfterBRs(dlButton, img, previousImg, settings.filenameFormat, sequence++, settings.prefix, settings.suffix);
                 }
             } else {
-                attachDownloadButton(dlButton, img, settings.filenameFormat, settings.prefix, settings.suffix, settings.buttonPosition, zeroPaddingLength);
+                attachDownloadButton(dlButton, img, settings.filenameFormat, sequence++, settings.prefix, settings.suffix);
             }
         } else {
             console.log(`Image not eligible for DL button: ${img.src}`);
@@ -97,7 +97,7 @@ function getPreviousImageBeforeBRs(img) {
     return null;
 }
 
-// Function to set the position of the button relative to the image
+// Function to set the position of the button relative to the image or parent
 function setPosition(button, img, position) {
     button.style.top = "auto";
     button.style.bottom = "auto";
@@ -121,7 +121,7 @@ function setPosition(button, img, position) {
 }
 
 // Function to attach the download button after <br><br> relative to the previous image
-function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, prefix, suffix, position, zeroPadding) {
+function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, sequence, prefix = "", suffix = "") {
     console.log(`Attaching button to image after <br><br>: ${img.src}`);
 
     button.addEventListener("click", (event) => {
@@ -159,7 +159,7 @@ function attachDownloadButtonAfterBRs(button, img, previousImg, filenameFormat, 
 }
 
 // Function to attach the download button to an image
-function attachDownloadButton(button, img, filenameFormat, prefix, suffix, position, zeroPadding) {
+function attachDownloadButton(button, img, filenameFormat, sequence, prefix = "", suffix = "") {
     console.log(`Attaching button to image: ${img.src}`);
 
     button.addEventListener("click", (event) => {
